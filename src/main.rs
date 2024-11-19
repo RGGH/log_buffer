@@ -43,3 +43,71 @@ fn main() {
     }
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_new_log_buffer() {
+        let log_buffer = LogBuffer::new(3);
+        assert_eq!(log_buffer.capacity, 3);
+        assert!(log_buffer.buffer.is_empty());
+    }
+
+    #[test]
+    fn test_add_logs() {
+        let mut log_buffer = LogBuffer::new(3);
+        log_buffer.add("First log".to_string());
+        log_buffer.add("Second log".to_string());
+        assert_eq!(log_buffer.get_logs(), vec!["First log", "Second log"]);
+    }
+
+    #[test]
+    fn test_overflow_behavior() {
+        let mut log_buffer = LogBuffer::new(3);
+        log_buffer.add("First log".to_string());
+        log_buffer.add("Second log".to_string());
+        log_buffer.add("Third log".to_string());
+        log_buffer.add("Fourth log".to_string()); // This should remove "First log"
+
+        assert_eq!(
+            log_buffer.get_logs(),
+            vec!["Second log", "Third log", "Fourth log"]
+        );
+    }
+
+    #[test]
+    fn test_retrieve_empty_logs() {
+        let log_buffer = LogBuffer::new(3);
+        assert!(log_buffer.get_logs().is_empty());
+    }
+
+    #[test]
+    fn test_exact_capacity() {
+        let mut log_buffer = LogBuffer::new(3);
+        log_buffer.add("First log".to_string());
+        log_buffer.add("Second log".to_string());
+        log_buffer.add("Third log".to_string());
+
+        assert_eq!(
+            log_buffer.get_logs(),
+            vec!["First log", "Second log", "Third log"]
+        );
+    }
+
+    #[test]
+    fn test_exceed_capacity() {
+        let mut log_buffer = LogBuffer::new(3);
+        log_buffer.add("First log".to_string());
+        log_buffer.add("Second log".to_string());
+        log_buffer.add("Third log".to_string());
+        log_buffer.add("Fourth log".to_string());
+        log_buffer.add("Fifth log".to_string());
+
+        assert_eq!(
+            log_buffer.get_logs(),
+            vec!["Third log", "Fourth log", "Fifth log"]
+        );
+    }
+}
+
