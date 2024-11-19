@@ -3,7 +3,9 @@
 - uses double ended queue
 - use to_owned() to avoid lifetime issues
 
-- Data Structure:
+---
+
+Data Structure:
 
     VecDeque is used because it efficiently supports adding/removing elements from both ends.
 
